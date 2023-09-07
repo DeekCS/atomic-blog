@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { faker } from "@faker-js/faker";
 
 function createRandomPost() {
@@ -25,9 +25,17 @@ function App() {
         )
       : posts;
 
-  function handleAddPost(post) {
-    setPosts((posts) => [post, ...posts]);
-  }
+  /*
+  We use `useCallback` to memoize the `handleAddPost` function, 
+  so that it's not re-created on every render.
+  This is not necessary here,
+  but I wanted to show you how to use `useCallback` 😉
+  */
+  const handleAddPost = (useCallback =
+    (function handleAddPost(post) {
+      setPosts((posts) => [post, ...posts]);
+    },
+    []));
 
   function handleClearPosts() {
     setPosts([]);
@@ -69,7 +77,11 @@ function App() {
         setSearchQuery={setSearchQuery}
       />
       <Main posts={searchedPosts} onAddPost={handleAddPost} />
-      <Archive archiveOptions={archiveOptions} onAddPost={handleAddPost} />
+      <Archive
+        archiveOptions={archiveOptions}
+        onAddPost={handleAddPost}
+        setIsFakeDark={setIsFakeDark}
+      />
       <Footer />
     </section>
   );
